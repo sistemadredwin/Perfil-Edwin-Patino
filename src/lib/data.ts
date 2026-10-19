@@ -131,12 +131,13 @@ export async function getGallery(): Promise<Media[]> {
 export async function getStats(): Promise<Stats> {
   "use cache";
   cacheLife("hours");
-  cacheTag("education", "meetings", "profile");
+  cacheTag("education", "meetings", "profile", "achievements");
 
-  const [profile, education, meetings] = await Promise.all([
+  const [profile, education, meetings, achievements] = await Promise.all([
     getProfile(),
     getEducation(),
     getMeetings(),
+    getAchievements(),
   ]);
   const start = profile.career_start_year;
   return {
@@ -146,5 +147,6 @@ export async function getStats(): Promise<Stats> {
     ).size,
     meetings: meetings.length,
     years: start ? new Date().getFullYear() - start : null,
+    positions: Math.max(0, achievements.length - 1),
   };
 }

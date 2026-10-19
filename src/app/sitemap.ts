@@ -7,7 +7,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = getSiteUrl();
   const meetings = await getMeetings();
 
-  const pages = ["", "/formacion", "/propuesta", "/reuniones", "/logros", "/galeria", "/contacto"];
+  const pages = ["", "/formacion", "/reuniones", "/logros", "/galeria", "/contacto"];
   return [
     ...pages.map((path) => ({
       url: `${base}${path}`,

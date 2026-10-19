@@ -12,7 +12,6 @@ export async function SiteHeader() {
     <header className="site-header" id="top">
       <div className="header-inner">
         <Link href="/" className="brand" aria-label={`${p.full_name}, inicio`}>
-          <span className="brand-mark" aria-hidden="true" />
           <span>
             <span className="brand-name">{p.full_name}</span>
             <span className="brand-sub">{sub}</span>

@@ -14,7 +14,7 @@ export async function SiteFooter() {
         <span>
           {p.full_name} · {p.location} · © {year}
         </span>
-        <a href="#top">Volver arriba</a>
+        <span className="footer-tagline">Buenaventura, estoy contigo</span>
       </div>
     </footer>
   );

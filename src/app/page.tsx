@@ -18,9 +18,8 @@ export default async function HomePage() {
 
   const numbers: { value: number | null; label: string }[] = [
     { value: stats.titles, label: "Títulos universitarios" },
-    { value: stats.universities, label: "Universidades" },
-    { value: stats.meetings, label: "Reuniones documentadas" },
-    { value: stats.years, label: "Años de trayectoria" },
+    { value: stats.years, label: "Años de trayectoria pública" },
+    { value: stats.positions, label: "Cargos públicos y de dirección" },
   ];
 
   return (
@@ -42,10 +41,7 @@ export default async function HomePage() {
               </ul>
             )}
             <div className="btn-row">
-              <Link href="/propuesta" className="btn btn-primary">
-                Ver la propuesta
-              </Link>
-              <Link href="/formacion" className="btn btn-outline">
+              <Link href="/formacion" className="btn btn-primary">
                 Mi formación
               </Link>
             </div>
@@ -53,7 +49,7 @@ export default async function HomePage() {
 
           <div className="portrait-wrap">
             <div className="portrait-frame">
-              <div className="portrait-flag" aria-hidden="true" />
+              <div className="portrait-backdrop" aria-hidden="true" />
               <div className="portrait">
                 {profile.photo_url ? (
                   <img

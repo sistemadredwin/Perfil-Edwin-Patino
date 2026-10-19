@@ -73,4 +73,5 @@ export type Stats = {
   universities: number;
   meetings: number;
   years: number | null;
+  positions: number;
 };

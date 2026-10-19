@@ -1,15 +1,3 @@
--- =====================================================================
---  Perfil profesional · esquema de Supabase
---  Pégalo completo en: Supabase → SQL Editor → New query → Run.
---  Es seguro ejecutarlo más de una vez (usa "if not exists" / "or replace").
--- =====================================================================
-
--- ---------------------------------------------------------------------
--- 1. Administrador
---    Solo los usuarios listados en public.admins pueden escribir datos.
---    Aunque alguien se registre en Supabase Auth, sin estar aquí no puede
---    modificar nada (y además conviene desactivar los registros nuevos).
--- ---------------------------------------------------------------------
 create table if not exists public.admins (
   user_id uuid primary key references auth.users (id) on delete cascade
 );
@@ -31,11 +19,7 @@ $$;
 revoke all on function public.is_admin() from public;
 grant execute on function public.is_admin() to anon, authenticated;
 
--- ---------------------------------------------------------------------
--- 2. Tablas
--- ---------------------------------------------------------------------
-
--- Perfil: una sola fila (la clave booleana lo garantiza).
+.
 create table if not exists public.profile (
   id boolean primary key default true check (id),
   full_name text not null default '',
@@ -96,9 +80,7 @@ create table if not exists public.achievements (
   created_at timestamptz not null default now()
 );
 
--- Fotos y videos. Un medio puede pertenecer a una reunión o ser solo de la
--- galería (meeting_id nulo). Los archivos viven en Cloudinary; aquí se guarda
--- la URL y el identificador público.
+
 create table if not exists public.media (
   id uuid primary key default gen_random_uuid(),
   meeting_id uuid references public.meetings (id) on delete cascade,
@@ -112,12 +94,12 @@ create table if not exists public.media (
   status text not null default 'publica'
     check (status in ('publica', 'oculta', 'borrador')),
   created_at timestamptz not null default now(),
-  -- Regla de negocio: los videos duran como máximo 30 segundos.
+
   constraint video_max_30s check (
     kind <> 'video'
     or (duration_seconds is not null
         and duration_seconds > 0
-        and duration_seconds <= 30)
+        and duration_seconds <= 60)
   )
 );
 create index if not exists media_meeting_idx on public.media (meeting_id);
@@ -137,9 +119,7 @@ create table if not exists public.messages (
   )
 );
 
--- ---------------------------------------------------------------------
--- 3. Fecha de actualización automática
--- ---------------------------------------------------------------------
+
 create or replace function public.set_updated_at()
 returns trigger
 language plpgsql
@@ -159,10 +139,7 @@ drop trigger if exists meetings_updated_at on public.meetings;
 create trigger meetings_updated_at before update on public.meetings
   for each row execute function public.set_updated_at();
 
--- ---------------------------------------------------------------------
--- 4. Permisos (RLS)
---    Público: lee solo lo publicado.   Administrador: lee y escribe todo.
--- ---------------------------------------------------------------------
+
 alter table public.profile      enable row level security;
 alter table public.education    enable row level security;
 alter table public.meetings     enable row level security;
@@ -195,7 +172,7 @@ create policy "achievements admin" on public.achievements
   for all to authenticated
   using ((select public.is_admin())) with check ((select public.is_admin()));
 
--- Reuniones: el público solo ve las publicadas.
+
 drop policy if exists "meetings lectura" on public.meetings;
 create policy "meetings lectura" on public.meetings
   for select to anon, authenticated
@@ -205,8 +182,7 @@ create policy "meetings admin" on public.meetings
   for all to authenticated
   using ((select public.is_admin())) with check ((select public.is_admin()));
 
--- Medios: públicos solo si están publicados y, cuando pertenecen a una
--- reunión, solo si esa reunión también está publicada.
+
 drop policy if exists "media lectura" on public.media;
 create policy "media lectura" on public.media
   for select to anon, authenticated
@@ -228,7 +204,6 @@ create policy "media admin" on public.media
   for all to authenticated
   using ((select public.is_admin())) with check ((select public.is_admin()));
 
--- Mensajes: cualquiera puede enviar; solo el admin los lee o gestiona.
 drop policy if exists "messages enviar" on public.messages;
 create policy "messages enviar" on public.messages
   for insert to anon, authenticated with check (true);
@@ -251,18 +226,8 @@ grant insert, update, delete on public.profile, public.education,
 grant insert on public.messages to anon, authenticated;
 grant select, update, delete on public.messages to authenticated;
 
--- ---------------------------------------------------------------------
--- 5. Datos iniciales
--- ---------------------------------------------------------------------
+
 insert into public.profile (full_name, profession, location)
 values ('[Nombre Apellido]', '[Profesión]', 'Buenaventura, Valle del Cauca')
 on conflict (id) do nothing;
 
--- ---------------------------------------------------------------------
--- 6. Tu usuario administrador (haz esto DESPUÉS de crear tu usuario)
---    a) Supabase → Authentication → Users → Add user (correo y contraseña).
---    b) Ejecuta esto con tu correo:
---
---    insert into public.admins (user_id)
---    select id from auth.users where email = 'tu-correo@dominio.com';
--- ---------------------------------------------------------------------

@@ -13,8 +13,8 @@ login y permisos) · Cloudinary (fotos y videos, fase 3) · Vercel.
 | Fase | Contenido | Estado |
 |---|---|---|
 | 1 | Sitio público, esquema de Supabase, formulario de contacto, chequeo de salud | **Hecha** |
-| 2 | Panel `/admin` con login y edición de perfil, formación, reuniones y logros | Pendiente |
-| 3 | Subida de fotos y videos (validación de 30 s) con Cloudinary | Pendiente |
+| 2 | Panel `/admin` con acceso y gestión de perfil, formación, reuniones, logros y galería | **Implementado** |
+| 3 | Subida firmada de fotos y videos con Cloudinary y validación de 30 s | **Código listo**; falta configurar Cloudinary y probar con archivos reales |
 | 4 | Dominio, SEO (sitemap), revisión final | Pendiente |
 
 Sin variables de entorno el sitio funciona con **datos de ejemplo**, así puedes
@@ -45,11 +45,33 @@ npm run dev        # http://localhost:3000
 6. Reinicia `npm run dev`. Edita la fila de `profile` en el **Table Editor**
    para poner nombre, profesión y datos de contacto.
 
+## Panel de administración y carga de medios
+
+1. Crea una cuenta en [Cloudinary](https://cloudinary.com/) y copia el **Cloud
+   name**, **API Key** y **API Secret** desde el Dashboard.
+2. Pega esos valores en `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` y
+   `CLOUDINARY_API_SECRET` dentro de `.env.local`. No agregues el prefijo
+   `NEXT_PUBLIC_` ni compartas el API Secret.
+3. Confirma que ejecutaste `supabase/schema.sql`, creaste el usuario en
+   **Authentication → Users** y lo autorizaste en `public.admins`.
+4. Reinicia `npm run dev` y abre `http://localhost:3000/admin`. Inicia sesión
+   con ese usuario.
+5. En **Galería**, prueba con fotos JPG, PNG o WebP (máximo 15 MB) y videos MP4
+   o MOV (máximo 30 segundos y 100 MB). Los medios se guardan en Cloudinary y
+   sus URL y metadatos en Supabase. Elige si quedan como borrador o públicos.
+
+El API Secret solo se usa en rutas del servidor para firmar y verificar las
+subidas; nunca se envía al navegador. El panel permite actualizar el perfil, agregar o quitar formación y logros,
+registrar reuniones y cambiar su estado, y subir/publicar/ocultar/eliminar
+fotos y videos.
+
 ## Publicarlo en Vercel
 
 1. Sube el proyecto a un repositorio de GitHub e impórtalo en Vercel.
 2. En **Settings → Environment Variables**, agrega las variables de
-   `.env.example` (para producción usa tu dominio en `NEXT_PUBLIC_SITE_URL`).
+   `.env.example`, incluidas las tres credenciales privadas de Cloudinary (para
+   producción usa tu dominio en `NEXT_PUBLIC_SITE_URL`). No subas `.env.local`
+   al repositorio.
 3. Para un dominio propio: **Settings → Domains → Add**. Vercel te muestra los
    registros DNS exactos que debes copiar en el sitio donde lo compraste.
 
