@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { getProfile } from "@/lib/data";
+import { InstallAppButton } from "./InstallAppButton";
 import { TabLinks } from "./TabLinks";
 import { TabNav } from "./TabNav";
 
@@ -21,6 +22,7 @@ export async function SiteHeader() {
         <Suspense fallback={<TabLinks pathname={null} />}>
           <TabNav />
         </Suspense>
+        <InstallAppButton />
       </div>
     </header>
   );

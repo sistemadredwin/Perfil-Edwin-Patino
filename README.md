@@ -27,6 +27,14 @@ npm install
 npm run dev        # http://localhost:3000
 ```
 
+## Instalarlo como aplicación en Windows
+
+Publica el sitio en una dirección HTTPS (o ábrelo en `localhost`) y entra con
+Chrome o Edge. Pulsa **Instalar app** en la cabecera; también puedes abrir el
+menú del navegador y elegir **Instalar aplicación**. La aplicación aparecerá
+como una ventana independiente y podrás anclarla al escritorio o a la barra de
+tareas de Windows.
+
 ## Conectarlo a Supabase
 
 1. Crea un proyecto en [supabase.com](https://supabase.com).

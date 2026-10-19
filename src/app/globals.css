@@ -187,6 +187,42 @@ select {
   opacity: 1;
   color: var(--paper);
 }
+.install-app {
+  position: relative;
+  align-self: flex-start;
+  padding-bottom: 12px;
+}
+.install-app-button {
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1px solid var(--gold);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--paper);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.install-app-button:hover {
+  background: var(--gold);
+  color: var(--deep);
+}
+.install-app-message {
+  position: absolute;
+  z-index: 1;
+  top: 100%;
+  left: 0;
+  width: min(320px, calc(100vw - 40px));
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--card);
+  color: var(--ink);
+  font-size: 13px;
+  box-shadow: 0 4px 16px rgb(0 0 0 / 15%);
+}
 
 /* ---------- Botones ---------- */
 .btn {
