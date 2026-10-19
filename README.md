@@ -1,7 +1,7 @@
 # Perfil profesional
 
 Sitio de presentación para un profesional (abogado, contador, etc.): formación,
-reuniones ya realizadas, logros, galería de fotos y videos cortos (máx. 30 s) y
+reuniones ya realizadas, logros, galería de fotos y videos (30–90 s) y
 contacto. Navegación por pestañas, paleta azul marino y gris negro con el
 acento amarillo y verde de la bandera de Buenaventura.
 
@@ -14,7 +14,7 @@ login y permisos) · Cloudinary (fotos y videos, fase 3) · Vercel.
 |---|---|---|
 | 1 | Sitio público, esquema de Supabase, formulario de contacto, chequeo de salud | **Hecha** |
 | 2 | Panel `/admin` con acceso y gestión de perfil, formación, reuniones, logros y galería | **Implementado** |
-| 3 | Subida firmada de fotos y videos con Cloudinary y validación de 30 s | **Código listo**; falta configurar Cloudinary y probar con archivos reales |
+| 3 | Subida firmada de fotos y videos con Cloudinary y validación de duración de 30–90 s | **Código listo**; falta configurar Cloudinary y probar con archivos reales |
 | 4 | Dominio, SEO (sitemap), revisión final | Pendiente |
 
 Sin variables de entorno el sitio funciona con **datos de ejemplo**, así puedes
@@ -52,12 +52,26 @@ npm run dev        # http://localhost:3000
 2. Pega esos valores en `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` y
    `CLOUDINARY_API_SECRET` dentro de `.env.local`. No agregues el prefijo
    `NEXT_PUBLIC_` ni compartas el API Secret.
-3. Confirma que ejecutaste `supabase/schema.sql`, creaste el usuario en
+3. Si ya habías ejecutado una versión anterior de `supabase/schema.sql`, aplica
+   esta actualización en **Supabase → SQL Editor** para aceptar videos de 30 a
+   90 segundos:
+   ```sql
+   alter table public.media drop constraint if exists video_max_30s;
+   alter table public.media drop constraint if exists video_duration_30_to_90s;
+   alter table public.media add constraint video_duration_30_to_90s check (
+     kind <> 'video'
+     or (duration_seconds is not null
+         and duration_seconds >= 30
+         and duration_seconds <= 90)
+   );
+   ```
+   Si aún no habías creado las tablas, ejecuta `supabase/schema.sql`.
+4. Confirma que creaste el usuario en
    **Authentication → Users** y lo autorizaste en `public.admins`.
-4. Reinicia `npm run dev` y abre `http://localhost:3000/admin`. Inicia sesión
+5. Reinicia `npm run dev` y abre `http://localhost:3000/admin`. Inicia sesión
    con ese usuario.
-5. En **Galería**, prueba con fotos JPG, PNG o WebP (máximo 15 MB) y videos MP4
-   o MOV (máximo 30 segundos y 100 MB). Los medios se guardan en Cloudinary y
+6. En **Galería**, prueba con fotos JPG, PNG o WebP (máximo 15 MB) y videos MP4
+   o MOV (de 30 a 90 segundos y hasta 100 MB). Los medios se guardan en Cloudinary y
    sus URL y metadatos en Supabase. Elige si quedan como borrador o públicos.
 
 El API Secret solo se usa en rutas del servidor para firmar y verificar las
@@ -123,13 +137,13 @@ un monitor (por ejemplo UptimeRobot) que la visite cada pocos minutos.
 - `src/lib/data.ts` — lecturas públicas de Supabase con caché por etiquetas
   (`profile`, `education`, `meetings`, `achievements`, `media`).
 - `src/lib/sample.ts` — datos de ejemplo mientras no hay Supabase.
-- `supabase/schema.sql` — tablas, regla de máximo 30 s por video y permisos.
+- `supabase/schema.sql` — tablas, regla de duración de 30 a 90 s por video y permisos.
 
 ## Seguridad
 
 - Las políticas RLS hacen que el público solo lea lo publicado; solo los
   usuarios listados en `public.admins` pueden escribir.
-- La base rechaza videos de más de 30 s (`video_max_30s`), además de las
+- La base rechaza videos fuera del rango de 30 a 90 s (`video_duration_30_to_90s`), además de las
   validaciones en el navegador y el servidor que llegarán en la fase 3.
 - El formulario de contacto tiene un campo trampa anti-spam, pero no limita la
   frecuencia de envíos; si llega spam, se añade un límite o un captcha.

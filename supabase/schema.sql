@@ -95,12 +95,20 @@ create table if not exists public.media (
     check (status in ('publica', 'oculta', 'borrador')),
   created_at timestamptz not null default now(),
 
-  constraint video_max_30s check (
+  constraint video_duration_30_to_90s check (
     kind <> 'video'
     or (duration_seconds is not null
-        and duration_seconds > 0
-        and duration_seconds <= 60)
+        and duration_seconds >= 30
+        and duration_seconds <= 90)
   )
+);
+alter table public.media drop constraint if exists video_max_30s;
+alter table public.media drop constraint if exists video_duration_30_to_90s;
+alter table public.media add constraint video_duration_30_to_90s check (
+  kind <> 'video'
+  or (duration_seconds is not null
+      and duration_seconds >= 30
+      and duration_seconds <= 90)
 );
 create index if not exists media_meeting_idx on public.media (meeting_id);
 
@@ -230,4 +238,3 @@ grant select, update, delete on public.messages to authenticated;
 insert into public.profile (full_name, profession, location)
 values ('[Nombre Apellido]', '[Profesión]', 'Buenaventura, Valle del Cauca')
 on conflict (id) do nothing;
-

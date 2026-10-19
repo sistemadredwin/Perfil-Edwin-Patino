@@ -27,6 +27,16 @@ const STATUSES = new Set<Status>(["publica", "oculta", "borrador"]);
 const IMAGE_FORMATS = new Set(["jpg", "jpeg", "png", "webp"]);
 const VIDEO_FORMATS = new Set(["mp4", "mov"]);
 
+function getDurationSeconds(value: unknown): number | null {
+  const duration =
+    typeof value === "number"
+      ? value
+      : typeof value === "string" && value.trim()
+        ? Number(value)
+        : Number.NaN;
+  return Number.isFinite(duration) && duration > 0 ? duration : null;
+}
+
 export async function POST(request: Request) {
   const authorization = await authorizeAdmin(request);
   if ("response" in authorization) return authorization.response;
@@ -207,18 +217,26 @@ export async function POST(request: Request) {
 
   let durationSeconds: number | null = null;
   if (kind === "video") {
-    if (
-      typeof asset.duration !== "number" ||
-      !Number.isFinite(asset.duration) ||
-      asset.duration <= 0 ||
-      asset.duration > 30
-    ) {
+    const verifiedDuration =
+      getDurationSeconds(asset.duration) ?? getDurationSeconds(upload.duration);
+    if (verifiedDuration === null) {
       return Response.json(
-        { error: "El video debe durar más de 0 y máximo 30 segundos." },
+        {
+          error:
+            "Cloudinary no devolvió la duración del video. Intenta subirlo de nuevo.",
+        },
         { status: 400 },
       );
     }
-    durationSeconds = asset.duration;
+    if (verifiedDuration < 30 || verifiedDuration > 90) {
+      return Response.json(
+        {
+          error: `Cloudinary detectó ${verifiedDuration.toFixed(2)} segundos; el video debe durar entre 30 y 90 segundos.`,
+        },
+        { status: 400 },
+      );
+    }
+    durationSeconds = verifiedDuration;
   }
 
   const thumbUrl =
@@ -245,12 +263,22 @@ export async function POST(request: Request) {
     .single();
 
   if (error) {
-    console.error("No se pudo registrar el medio en Supabase:", error.message);
+    console.error("No se pudo registrar el medio en Supabase:", {
+      code: error.code,
+      message: error.message,
+    });
+    const userMessage =
+      error.code === "23514"
+        ? "Supabase todavía tiene una regla anterior para la duración. Ejecuta la actualización SQL de videos de 30 a 90 segundos en el README."
+        : error.code === "42501"
+          ? "Supabase rechazó el registro. Confirma que esta cuenta esté autorizada como administradora."
+          : error.code === "23503"
+            ? "La reunión seleccionada ya no existe. Actualiza el panel y vuelve a intentarlo."
+            : error.code === "PGRST204" || error.code === "42703"
+              ? "El esquema de Supabase está desactualizado. Ejecuta la actualización SQL indicada en el README."
+              : "El archivo se subió, pero no se pudo registrar en Supabase.";
     return Response.json(
-      {
-        error:
-          "El archivo se subió, pero no se pudo registrar en Supabase.",
-      },
+      { error: userMessage },
       { status: 500 },
     );
   }

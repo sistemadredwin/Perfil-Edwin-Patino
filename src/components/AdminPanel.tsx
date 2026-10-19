@@ -82,8 +82,12 @@ function checkVideoDuration(file: File): Promise<void> {
       URL.revokeObjectURL(url);
       if (!Number.isFinite(video.duration) || video.duration <= 0) {
         reject(new Error("No se pudo leer la duración del video."));
-      } else if (video.duration > 30) {
-        reject(new Error("El video debe durar máximo 30 segundos."));
+      } else if (video.duration < 30 || video.duration > 90) {
+        reject(
+          new Error(
+            `El archivo indica ${video.duration.toFixed(2)} segundos; debe durar entre 30 y 90 segundos.`,
+          ),
+        );
       } else {
         resolve();
       }
@@ -623,7 +627,7 @@ export function AdminPanel() {
                   <h2>Antes de subir</h2>
                   <ul>
                     <li>Fotos JPG, PNG o WebP de hasta 15 MB.</li>
-                    <li>Videos MP4 o MOV de máximo 30 segundos y hasta 100 MB.</li>
+                    <li>Videos MP4 o MOV de 30 a 90 segundos y hasta 100 MB.</li>
                     <li>Los nuevos archivos quedan como borrador hasta que los publiques.</li>
                     <li>Verifica que tienes permiso para publicar a las personas que aparecen.</li>
                   </ul>
@@ -643,7 +647,7 @@ export function AdminPanel() {
                     <label className="admin-file-picker">
                       <span>Selecciona una foto o video</span>
                       <small>
-                        JPG, PNG, WebP, MP4 o MOV. Video máximo 30 segundos.
+                        JPG, PNG, WebP, MP4 o MOV. Video de 30 segundos a 1 minuto y medio.
                       </small>
                       <input
                         type="file"
