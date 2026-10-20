@@ -129,6 +129,7 @@ select {
 
 /* ---------- Cabecera y pestañas ---------- */
 .site-header {
+  position: relative;
   background: var(--deep);
   color: var(--paper);
   border-bottom: 3px solid var(--gold);
@@ -188,31 +189,37 @@ select {
   color: var(--paper);
 }
 .install-app {
-  position: relative;
-  align-self: flex-start;
-  padding-bottom: 12px;
+  position: absolute;
+  z-index: 2;
+  top: 12px;
+  right: clamp(20px, 5vw, 72px);
 }
 .install-app-button {
-  min-height: 40px;
-  padding: 0 16px;
-  border: 1px solid var(--gold);
-  border-radius: 6px;
-  background: transparent;
-  color: var(--paper);
+  min-height: 32px;
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  color: rgb(255 255 255 / 62%);
   font: inherit;
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   cursor: pointer;
 }
 .install-app-button:hover {
-  background: var(--gold);
-  color: var(--deep);
+  color: var(--gold-light);
+}
+.install-app-button:focus-visible {
+  border-radius: 2px;
+  outline: 2px solid var(--gold-light);
+  outline-offset: 4px;
 }
 .install-app-message {
   position: absolute;
   z-index: 1;
   top: 100%;
-  left: 0;
+  right: 0;
   width: min(320px, calc(100vw - 40px));
   margin: 0;
   padding: 12px 14px;
