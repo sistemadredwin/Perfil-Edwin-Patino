@@ -50,6 +50,8 @@ export function MeetingsBrowser({ meetings }: { meetings: Meeting[] }) {
   });
   const [featured, ...rest] = visible;
 
+  if (!featured) return null;
+
   return (
     <>
       {meetings.length > 1 && (
@@ -68,74 +70,68 @@ export function MeetingsBrowser({ meetings }: { meetings: Meeting[] }) {
         </div>
       )}
 
-      {!featured ? (
-        <p className="empty">No hay reuniones publicadas todavía.</p>
-      ) : (
-        <>
-          <article className="featured">
-            <Link
-              href={`/reuniones/${featured.slug}`}
-              className="featured-media"
-              aria-label={`Ver la reunión: ${featured.title}`}
-            >
-              <MediaCover media={featured.media[0]} />
-            </Link>
-            <div className="featured-body">
-              <div className="meta">{metaLine(featured)}</div>
-              <h2 className="h3">{featured.title}</h2>
-              <div className="steps">
-                <div className="step">
-                  <strong className="step-n">1</strong>
-                  <div>
-                    <b>Contexto</b>
-                    <span>{featured.context}</span>
-                  </div>
-                </div>
-                <div className="step">
-                  <strong className="step-n">2</strong>
-                  <div>
-                    <b>Qué hicimos</b>
-                    <span>{featured.actions}</span>
-                  </div>
-                </div>
-                <div className="step">
-                  <strong className="step-n">3</strong>
-                  <div>
-                    <b>Resultado</b>
-                    <span>{featured.result}</span>
-                  </div>
-                </div>
+      <article className="featured">
+        <Link
+          href={`/reuniones/${featured.slug}`}
+          className="featured-media"
+          aria-label={`Ver la reunión: ${featured.title}`}
+        >
+          <MediaCover media={featured.media[0]} />
+        </Link>
+        <div className="featured-body">
+          <div className="meta">{metaLine(featured)}</div>
+          <h2 className="h3">{featured.title}</h2>
+          <div className="steps">
+            <div className="step">
+              <strong className="step-n">1</strong>
+              <div>
+                <b>Contexto</b>
+                <span>{featured.context}</span>
               </div>
-              <Link href={`/reuniones/${featured.slug}`} className="text-link">
-                Ver reunión completa →
-              </Link>
             </div>
-          </article>
+            <div className="step">
+              <strong className="step-n">2</strong>
+              <div>
+                <b>Qué hicimos</b>
+                <span>{featured.actions}</span>
+              </div>
+            </div>
+            <div className="step">
+              <strong className="step-n">3</strong>
+              <div>
+                <b>Resultado</b>
+                <span>{featured.result}</span>
+              </div>
+            </div>
+          </div>
+          <Link href={`/reuniones/${featured.slug}`} className="text-link">
+            Ver reunión completa →
+          </Link>
+        </div>
+      </article>
 
-          {rest.length > 0 && (
-            <div className="cards">
-              {rest.map((m, i) => (
-                <article key={m.id} className="card">
-                  <Link
-                    href={`/reuniones/${m.slug}`}
-                    className="card-media"
-                    aria-label={`Ver la reunión: ${m.title}`}
-                  >
-                    <MediaCover media={m.media[0]} gold={i % 3 === 2} />
-                  </Link>
-                  <div className="card-body">
-                    <div className="meta">{metaLine(m)}</div>
-                    <h3>{m.title}</h3>
-                    {m.context && <p>{m.context}</p>}
-                    <Link href={`/reuniones/${m.slug}`} className="text-link">
-                      Ver reunión →
-                    </Link>
-                  </div>
-                </article>
-              ))}
-            </div>
-          )}
-        </>
+      {rest.length > 0 && (
+        <div className="cards">
+          {rest.map((m, i) => (
+            <article key={m.id} className="card">
+              <Link
+                href={`/reuniones/${m.slug}`}
+                className="card-media"
+                aria-label={`Ver la reunión: ${m.title}`}
+              >
+                <MediaCover media={m.media[0]} gold={i % 3 === 2} />
+              </Link>
+              <div className="card-body">
+                <div className="meta">{metaLine(m)}</div>
+                <h3>{m.title}</h3>
+                {m.context && <p>{m.context}</p>}
+                <Link href={`/reuniones/${m.slug}`} className="text-link">
+                  Ver reunión →
+                </Link>
+              </div>
+            </article>
+          ))}
+        </div>
       )}
     </>
   );

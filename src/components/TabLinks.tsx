@@ -16,7 +16,13 @@ export function isActive(href: string, pathname: string | null): boolean {
 }
 
 /** Lista de pestañas. Se renderiza igual en servidor y en cliente. */
-export function TabLinks({ pathname }: { pathname: string | null }) {
+export function TabLinks({
+  pathname,
+  onNavigate,
+}: {
+  pathname: string | null;
+  onNavigate?: () => void;
+}) {
   return (
     <nav className="tabs" aria-label="Secciones del sitio">
       {TABS.map((tab) => (
@@ -25,6 +31,7 @@ export function TabLinks({ pathname }: { pathname: string | null }) {
           href={tab.href}
           className="tab"
           aria-current={isActive(tab.href, pathname) ? "page" : undefined}
+          onClick={onNavigate}
         >
           {tab.label}
         </Link>

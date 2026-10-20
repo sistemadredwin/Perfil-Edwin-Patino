@@ -40,11 +40,6 @@ export default async function HomePage() {
                 ))}
               </ul>
             )}
-            <div className="btn-row">
-              <Link href="/formacion" className="btn btn-primary">
-                Mi formación
-              </Link>
-            </div>
           </div>
 
           <div className="portrait-wrap">
@@ -62,6 +57,12 @@ export default async function HomePage() {
                 )}
               </div>
             </div>
+          </div>
+
+          <div className="btn-row">
+            <Link href="/formacion" className="btn btn-primary">
+              Mi formación
+            </Link>
           </div>
         </div>
 

@@ -49,9 +49,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         />
       </head>
       <body>
-        <a className="skip" href="#contenido">
-          Saltar al contenido
-        </a>
         <SiteHeader />
         <main id="contenido">{children}</main>
         <SiteFooter />

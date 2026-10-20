@@ -21,10 +21,6 @@ export default async function ReunionesPage() {
         <div className="intro">
           <div className="eyebrow">Mis reuniones</div>
           <h1 className="h2">Así hemos trabajado</h1>
-          <p className="lead">
-            Un registro de reuniones ya realizadas, con su contexto, lo que se
-            hizo y el resultado.
-          </p>
         </div>
         <MeetingsBrowser meetings={meetings} />
       </div>

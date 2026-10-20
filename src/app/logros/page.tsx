@@ -14,7 +14,7 @@ export default async function LogrosPage() {
   const achievements = await getAchievements();
 
   return (
-    <section className="section section-dark">
+    <section className="section section-achievements">
       <div className="container">
         <div className="intro">
           <div className="eyebrow">Mis logros</div>
@@ -22,7 +22,7 @@ export default async function LogrosPage() {
         </div>
 
         {achievements.length === 0 ? (
-          <p className="empty" style={{ color: "var(--on-dark)" }}>
+          <p className="empty">
             Todavía no hay logros registrados.
           </p>
         ) : (
