@@ -8,11 +8,11 @@ update public.profile set
   profession = 'Abogado y contador público · Expersonero Distrital',
   headline = 'Bonaverense, nacido en el río Naya. Abogado y contador público con trayectoria como concejal, director administrativo y financiero de la Universidad del Pacífico y Personero Distrital de Buenaventura.',
   bio = 'Abogado y contador público, con especializaciones en Intervención Social Comunitaria, Cultura de Paz y Derecho Internacional Humanitario, y Gerencia Financiera. Su trayectoria reúne el conocimiento jurídico, la administración de recursos, la defensa de los derechos humanos y el trabajo con comunidades, con experiencia en el Concejo de Buenaventura, la Universidad del Pacífico y la Personería Distrital.',
-  email = 'edwinjanes1973@gmail.com',
-  phone = '315 421 8738',
+  email = '',
+  phone = '',
   location = 'Buenaventura, Valle del Cauca',
   photo_url = '/edwin-patino.jpg',
-  whatsapp = '573154218738',
+  whatsapp = '',
   career_start_year = 2012,
   updated_at = now()
 where id = true;
