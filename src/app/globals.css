@@ -1365,14 +1365,6 @@ body:has(.admin-panel) > .site-footer {
   align-items: center;
   gap: 10px;
 }
-.mobile-menu-toggle {
-  top: 14px;
-  right: 16px;
-}
-.site-menu {
-  right: 16px;
-  width: min(220px, calc(100vw - 32px));
-}
 .admin-link,
 .admin-logout {
   display: inline-flex;
