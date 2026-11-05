@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#14233f"/>
+  <path d="M96 356h320v28H96z" fill="#d4a72c"/>
+  <text x="256" y="318" fill="#f1f2f4" font-family="Georgia,serif" font-size="224" font-weight="700" text-anchor="middle">EP</text>
+</svg>
