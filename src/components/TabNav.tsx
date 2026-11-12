@@ -1,11 +1,13 @@
 "use client";
 
+import Image from "next/image";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { TabLinks } from "./TabLinks";
 
 /** Marca la pestaña activa según la ruta actual. */
-export function TabNav() {
+export function TabNav({ brandName }: { brandName: string }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const toggleRef = useRef<HTMLButtonElement>(null);
@@ -62,9 +64,26 @@ export function TabNav() {
           }}
         />
         <div className="site-menu-panel">
-          <div className="site-menu-heading">
-            <span>Navega por</span>
-            <span>Buenaventura · Valle del Cauca</span>
+          <div className="site-menu-header">
+            <Link
+              href="/"
+              className="site-menu-brand"
+              aria-label={`${brandName}, inicio`}
+              onClick={() => setOpen(false)}
+            >
+              <Image src="/logo-edwin.png" width={36} height={36} alt="" />
+              <span>{brandName}</span>
+            </Link>
+            <button
+              className="site-menu-close"
+              type="button"
+              onClick={() => {
+                setOpen(false);
+                toggleRef.current?.focus();
+              }}
+            >
+              Cerrar menú
+            </button>
           </div>
           <TabLinks pathname={pathname} onNavigate={() => setOpen(false)} />
           <div className="site-menu-footer" aria-hidden="true">

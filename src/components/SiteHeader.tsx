@@ -27,7 +27,7 @@ export async function SiteHeader() {
         </Link>
         {/* La pestaña activa depende de la URL: se resuelve en el cliente. */}
         <Suspense fallback={null}>
-          <TabNav />
+          <TabNav brandName={p.full_name} />
         </Suspense>
       </div>
     </header>
