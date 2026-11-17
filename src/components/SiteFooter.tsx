@@ -1,3 +1,4 @@
+
 import { cacheLife, cacheTag } from "next/cache";
 import { getProfile } from "@/lib/data";
 
@@ -8,13 +9,37 @@ export async function SiteFooter() {
 
   const p = await getProfile();
   const year = new Date().getFullYear();
+
   return (
     <footer className="site-footer">
       <div className="footer-inner">
         <span>
           {p.full_name} · {p.location} · © {year}
         </span>
-        <span className="footer-tagline">Buenaventura, estoy contigo</span>
+
+        <div className="footer-social">
+          <a
+            href="https://www.facebook.com/edwinjanes.patinominota"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Facebook
+          </a>
+
+          <span aria-hidden="true">·</span>
+
+          <a
+            href="https://www.instagram.com/edwinjanes/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Instagram
+          </a>
+        </div>
+
+        <span className="footer-tagline">
+          Buenaventura, estoy contigo
+        </span>
       </div>
     </footer>
   );
