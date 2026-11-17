@@ -34,6 +34,7 @@ export function TabLinks({
           onClick={onNavigate}
         >
           {tab.label}
+          {onNavigate && <span className="site-menu-indicator" aria-hidden="true" />}
         </Link>
       ))}
     </nav>

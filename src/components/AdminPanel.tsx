@@ -6,6 +6,7 @@ import {
   type FormEvent,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import type { Session } from "@supabase/supabase-js";
@@ -159,6 +160,8 @@ export function AdminPanel() {
     "checking" | "admin" | "forbidden"
   >("checking");
   const [activeTab, setActiveTab] = useState<PanelTab>("resumen");
+  const [adminMenuOpen, setAdminMenuOpen] = useState(false);
+  const adminMenuToggleRef = useRef<HTMLButtonElement>(null);
   const [items, setItems] = useState<AdminMedia[]>([]);
   const [meetingOptions, setMeetingOptions] = useState<MeetingOption[]>([]);
   const [meetingsCount, setMeetingsCount] = useState(0);
@@ -181,6 +184,25 @@ export function AdminPanel() {
       : session === null
         ? "signed-out"
         : accessStatus;
+
+  useEffect(() => {
+    if (!adminMenuOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setAdminMenuOpen(false);
+      adminMenuToggleRef.current?.focus();
+    };
+
+    window.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [adminMenuOpen]);
 
   useEffect(() => {
     if (!client) return;
@@ -298,6 +320,7 @@ export function AdminPanel() {
       setErrorMessage("No se pudo cerrar la sesión. Inténtalo de nuevo.");
     } else {
       setSession(null);
+      setAdminMenuOpen(false);
       setItems([]);
       setAccessStatus("checking");
       setMessage("");
@@ -482,6 +505,21 @@ export function AdminPanel() {
             )}
           </div>
           {authStatus === "admin" && (
+            <button
+              ref={adminMenuToggleRef}
+              className="admin-menu-toggle"
+              type="button"
+              aria-label={adminMenuOpen ? "Cerrar menú" : "Abrir menú"}
+              aria-expanded={adminMenuOpen}
+              aria-controls="admin-mobile-menu"
+              onClick={() => setAdminMenuOpen((wasOpen) => !wasOpen)}
+            >
+              <span aria-hidden="true" />
+              <span aria-hidden="true" />
+              <span aria-hidden="true" />
+            </button>
+          )}
+          {authStatus === "admin" && (
             <nav className="admin-tabs" aria-label="Secciones del panel">
               {PANEL_TABS.map((tab) => (
                 <button
@@ -494,6 +532,82 @@ export function AdminPanel() {
                 </button>
               ))}
             </nav>
+          )}
+          {authStatus === "admin" && session && (
+            <div
+              className={`admin-mobile-menu${adminMenuOpen ? " is-open" : ""}`}
+              id="admin-mobile-menu"
+              aria-hidden={!adminMenuOpen}
+            >
+              <button
+                className="admin-mobile-backdrop"
+                type="button"
+                tabIndex={adminMenuOpen ? 0 : -1}
+                aria-label="Cerrar menú"
+                onClick={() => {
+                  setAdminMenuOpen(false);
+                  adminMenuToggleRef.current?.focus();
+                }}
+              />
+              <nav
+                className="admin-mobile-drawer"
+                aria-label="Secciones del panel"
+              >
+                <div className="admin-mobile-heading">
+                  <span className="admin-mobile-mark" aria-hidden="true">
+                    B
+                  </span>
+                  <span>
+                    <strong>Panel de administración</strong>
+                    <small>Edwin Janes Patiño Minotta</small>
+                  </span>
+                  <button
+                    className="admin-mobile-close"
+                    type="button"
+                    onClick={() => {
+                      setAdminMenuOpen(false);
+                      adminMenuToggleRef.current?.focus();
+                    }}
+                  >
+                    Cerrar menú
+                  </button>
+                </div>
+                <div className="admin-mobile-links">
+                  {PANEL_TABS.map((tab) => (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      aria-current={activeTab === tab.id ? "page" : undefined}
+                      onClick={() => {
+                        setActiveTab(tab.id);
+                        setAdminMenuOpen(false);
+                      }}
+                    >
+                      {tab.label}
+                    </button>
+                  ))}
+                  <Link href="/" onClick={() => setAdminMenuOpen(false)}>
+                    Ver sitio público
+                  </Link>
+                </div>
+                <div className="admin-mobile-account">
+                  <span className="admin-mobile-avatar" aria-hidden="true">
+                    {(session.user.email?.[0] ?? "A").toUpperCase()}
+                  </span>
+                  <span className="admin-mobile-user">
+                    <strong>{session.user.email?.split("@")[0] ?? "Administrador"}</strong>
+                    <small>Administrador</small>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => void handleLogout()}
+                    disabled={isBusy}
+                  >
+                    Cerrar sesión
+                  </button>
+                </div>
+              </nav>
+            </div>
           )}
         </div>
       </header>
