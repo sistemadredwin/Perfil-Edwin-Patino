@@ -14,15 +14,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
   const title = `${name} | Perfil oficial`;
 
-  const rawDescription =
-    p.headline ||
-    p.bio ||
-    "Conoce el perfil, la trayectoria, la formación y el compromiso de Edwin Patiño con Buenaventura y su territorio.";
-
-  const description = rawDescription
-    .replace(/\s+/g, " ")
-    .trim()
-    .slice(0, 160);
+  const description =
+    "Edwin Janes Patiño Minotta, abogado y contador público de Buenaventura. Conoce su trayectoria, formación y compromiso con las comunidades del territorio.";
 
   const googleCode = process.env.GOOGLE_SITE_VERIFICATION;
 
