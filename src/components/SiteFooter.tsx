@@ -19,20 +19,24 @@ export async function SiteFooter() {
 
         <div className="footer-social">
           <a
+            className="footer-social-link"
             href="https://www.facebook.com/edwinjanes.patinominota"
             target="_blank"
             rel="noopener noreferrer"
           >
+            <i className="bi bi-facebook" aria-hidden="true" />
             Facebook
           </a>
 
           <span aria-hidden="true">·</span>
 
           <a
+            className="footer-social-link"
             href="https://www.instagram.com/edwinjanes/"
             target="_blank"
             rel="noopener noreferrer"
           >
+            <i className="bi bi-instagram" aria-hidden="true" />
             Instagram
           </a>
         </div>

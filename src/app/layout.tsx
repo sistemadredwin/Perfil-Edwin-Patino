@@ -1,5 +1,6 @@
 
 import type { Metadata } from "next";
+import "bootstrap-icons/font/bootstrap-icons.css";
 import "./globals.css";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
