@@ -1,10 +1,11 @@
+
 import { getEducation, getProfile } from "@/lib/data";
 import { getSiteUrl, isReal, nameVariants } from "@/lib/site";
 
 /**
  * Datos estructurados (schema.org) que le dicen a Google quién es la persona
  * de este sitio: nombre, variantes del nombre, profesión, redes y estudios.
- * Ayuda a que, al buscar el nombre, Google asocie el sitio con la persona.
+ * Ayuda a que Google asocie el sitio con la persona.
  * Solo se emiten datos reales: nada de marcadores de ejemplo.
  */
 export async function PersonJsonLd() {
@@ -13,12 +14,18 @@ export async function PersonJsonLd() {
 
   const url = getSiteUrl();
   const variants = nameVariants(p.full_name);
-  const sameAs = [p.linkedin, p.instagram, p.youtube].filter(
-    (u) => isReal(u) && u.startsWith("http"),
-  );
+
+  const sameAs = [
+    "https://www.facebook.com/edwinjanes.patinominota",
+    "https://www.instagram.com/edwinjanes/",
+    p.linkedin,
+    p.youtube,
+  ].filter((u) => isReal(u) && u.startsWith("http"));
+
   const universities = Array.from(
     new Set(education.map((e) => e.university.trim()).filter(isReal)),
   );
+
   const [locality, region] = p.location.split(",").map((s) => s.trim());
 
   const person = {
@@ -60,7 +67,6 @@ export async function PersonJsonLd() {
     <script
       type="application/ld+json"
       dangerouslySetInnerHTML={{
-        // Se reemplaza "<" para que ningún texto pueda cerrar la etiqueta.
         __html: JSON.stringify({
           "@context": "https://schema.org",
           "@graph": [person, website],
