@@ -1,3 +1,4 @@
+
 import type { Metadata } from "next";
 import "./globals.css";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -8,21 +9,60 @@ import { getSiteUrl, isSampleMode } from "@/lib/site";
 
 export async function generateMetadata(): Promise<Metadata> {
   const p = await getProfile();
-  const name = p.full_name || "Perfil profesional";
-  const description = p.headline || p.bio || undefined;
-  const title = p.profession ? `${name} · ${p.profession}` : name;
+
+  const name = p.full_name || "Edwin Patiño";
+
+  const title = `${name} | Perfil oficial`;
+
+  const rawDescription =
+    p.headline ||
+    p.bio ||
+    "Conoce el perfil, la trayectoria, la formación y el compromiso de Edwin Patiño con Buenaventura y su territorio.";
+
+  const description = rawDescription
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 160);
+
   const googleCode = process.env.GOOGLE_SITE_VERIFICATION;
+
   return {
     metadataBase: new URL(getSiteUrl()),
-    title: { default: title, template: `%s · ${name}` },
+
+    title: {
+      default: title,
+      template: `%s | ${name}`,
+    },
+
     description,
+
     applicationName: name,
+
     authors: [{ name }],
-    // Con datos de ejemplo (sin Supabase) no se debe indexar nada.
+
+    creator: name,
+
+    publisher: name,
+
+    keywords: [
+      name,
+      "Edwin Patiño",
+      "Edwin Janes Patiño Minotta",
+      "Perfil oficial de Edwin Patiño",
+      "Buenaventura",
+      "Valle del Cauca",
+      "Perfil profesional",
+      "Trayectoria de Edwin Patiño",
+    ],
+
     robots: isSampleMode()
       ? { index: false, follow: false }
       : { index: true, follow: true },
-    verification: googleCode ? { google: googleCode } : undefined,
+
+    verification: googleCode
+      ? { google: googleCode }
+      : undefined,
+
     openGraph: {
       type: "website",
       locale: "es_CO",
@@ -30,10 +70,18 @@ export async function generateMetadata(): Promise<Metadata> {
       title,
       description,
     },
+
+    twitter: {
+      card: "summary",
+      title,
+      description,
+    },
   };
 }
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({
+  children,
+}: LayoutProps<"/">) {
   return (
     <html lang="es" data-scroll-behavior="smooth">
       <head>
