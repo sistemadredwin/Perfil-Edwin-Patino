@@ -452,6 +452,9 @@ export function AdminPanel() {
   const photos = items.filter((item) => item.kind === "foto");
   const videos = items.filter((item) => item.kind === "video");
   const drafts = items.filter((item) => item.status !== "publica").length;
+  const selectedMeeting = meetingOptions.find(
+    (meeting) => meeting.id === meetingId,
+  );
 
   return (
     <div className="admin-panel">
@@ -639,7 +642,9 @@ export function AdminPanel() {
                   <p className="eyebrow">Galería</p>
                   <h1 className="h2">Fotos y videos</h1>
                   <p className="lead">
-                    Sube medios de prueba y elige si se publican ahora o quedan como borrador.
+                    {selectedMeeting
+                      ? `Los archivos que subas se asociarán a «${selectedMeeting.title}».`
+                      : "Sube fotos o videos y elige si se publican ahora o quedan como borrador."}
                   </p>
                 </div>
                 <section className="admin-card">
@@ -780,6 +785,14 @@ export function AdminPanel() {
                 tab={activeTab}
                 client={client}
                 accessToken={session.access_token}
+                onAddMedia={
+                  activeTab === "reuniones"
+                    ? (meeting) => {
+                        setMeetingId(meeting.id);
+                        setActiveTab("galeria");
+                      }
+                    : undefined
+                }
               />
             )}
           </>

@@ -102,5 +102,6 @@ export async function DELETE(
   }
 
   revalidateTag("media", "max");
+  revalidateTag("meetings", "max");
   return Response.json({ ok: true });
 }

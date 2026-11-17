@@ -50,13 +50,58 @@ export async function sendMessage(
     );
   }
 
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.CONTACT_EMAIL_FROM;
+  const to = process.env.CONTACT_EMAIL_TO || "sistemadredwin@gmail.com";
+  if (!apiKey || !from) {
+    return fail(
+      "El envío de correo aún no está configurado. Escríbeme directamente por correo.",
+    );
+  }
+
+  let emailResponse: Response;
+  try {
+    emailResponse = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from,
+        to: [to],
+        reply_to: values.email,
+        subject: "Nuevo mensaje desde el sitio web",
+        text: `Nombre: ${values.name}\nCorreo: ${values.email}\n\nMensaje:\n${values.message}`,
+      }),
+    });
+  } catch (error) {
+    console.error("No se pudo conectar con Resend:", error);
+    return fail(
+      "No pude enviar el correo. Inténtalo de nuevo en un momento.",
+    );
+  }
+
+  if (!emailResponse.ok) {
+    console.error("Resend rechazó el correo:", emailResponse.status);
+    return fail(
+      "No se pudo enviar el correo. Revisa la configuración e inténtalo de nuevo.",
+    );
+  }
+
   const { error } = await sb.from("messages").insert(values);
   if (error) {
-    return fail("No pude enviar el mensaje. Inténtalo de nuevo en un momento.");
+    console.error("Supabase no pudo guardar el mensaje:", error.message);
+    return {
+      status: "ok",
+      message:
+        "Tu correo fue enviado, pero no se pudo guardar una copia en el sistema.",
+      values: empty,
+    };
   }
   return {
     status: "ok",
-    message: "¡Gracias! Recibí tu mensaje y te responderé pronto.",
+    message: `¡Gracias! Tu mensaje fue enviado a ${to}.`,
     values: empty,
   };
 }

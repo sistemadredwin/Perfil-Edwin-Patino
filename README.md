@@ -53,6 +53,22 @@ al escritorio o a la barra de tareas de Windows.
 6. Reinicia `npm run dev`. Edita la fila de `profile` en el **Table Editor**
    para poner nombre, profesión y datos de contacto.
 
+## Recibir los mensajes del formulario por correo
+
+El formulario envía los mensajes a `sistemadredwin@gmail.com` mediante
+[Resend](https://resend.com/) y también guarda una copia en Supabase.
+
+1. Crea una cuenta en Resend y verifica el dominio o remitente que usarás.
+2. Crea una API key en Resend y guárdala como `RESEND_API_KEY` en `.env.local`.
+3. Configura `CONTACT_EMAIL_FROM` con un remitente verificado de Resend.
+   `CONTACT_EMAIL_TO` ya apunta a `sistemadredwin@gmail.com`.
+4. Reinicia `npm run dev`. En producción, agrega las mismas variables en el
+   panel de variables de entorno de Vercel y vuelve a desplegar.
+
+No uses ni compartas una API key de Resend en el navegador; `RESEND_API_KEY`
+debe permanecer solo en el servidor. El formulario informa un error si el
+correo no se pudo enviar, en vez de mostrar una confirmación falsa.
+
 ## Panel de administración y carga de medios
 
 1. Crea una cuenta en [Cloudinary](https://cloudinary.com/) y copia el **Cloud
@@ -81,6 +97,8 @@ al escritorio o a la barra de tareas de Windows.
 6. En **Galería**, prueba con fotos JPG, PNG o WebP (máximo 15 MB) y videos MP4
    o MOV (de 30 a 90 segundos y hasta 100 MB). Los medios se guardan en Cloudinary y
    sus URL y metadatos en Supabase. Elige si quedan como borrador o públicos.
+   En **Reuniones**, usa **Añadir fotos o videos** en una reunión para abrir la
+   carga con esa reunión seleccionada.
 
 El API Secret solo se usa en rutas del servidor para firmar y verificar las
 subidas; nunca se envía al navegador. El panel permite actualizar el perfil, agregar o quitar formación y logros,
@@ -152,6 +170,6 @@ un monitor (por ejemplo UptimeRobot) que la visite cada pocos minutos.
 - Las políticas RLS hacen que el público solo lea lo publicado; solo los
   usuarios listados en `public.admins` pueden escribir.
 - La base rechaza videos fuera del rango de 30 a 90 s (`video_duration_30_to_90s`), además de las
-  validaciones en el navegador y el servidor que llegarán en la fase 3.
+  validaciones del navegador y del servidor.
 - El formulario de contacto tiene un campo trampa anti-spam, pero no limita la
   frecuencia de envíos; si llega spam, se añade un límite o un captcha.

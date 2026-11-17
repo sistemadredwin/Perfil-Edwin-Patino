@@ -284,6 +284,7 @@ export async function POST(request: Request) {
   }
 
   revalidateTag("media", "max");
+  revalidateTag("meetings", "max");
   return Response.json({ id: data.id }, { status: 201 });
 }
 
@@ -335,5 +336,6 @@ export async function PATCH(request: Request) {
   }
 
   revalidateTag("media", "max");
+  revalidateTag("meetings", "max");
   return Response.json({ ok: true });
 }

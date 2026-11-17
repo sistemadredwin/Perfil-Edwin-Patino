@@ -15,70 +15,65 @@ export function ScrollExperience() {
     const revealItems = document.querySelectorAll<HTMLElement>(
       "[data-reveal], .intro, .edu-row, .featured, .cards > .card, .achievements > .achievement, .plan-step, .contact > *",
     );
-    const counters = document.querySelectorAll<HTMLElement>("[data-count]");
-
-    root.classList.add("motion-ready");
-    for (const element of revealItems) {
-      if (!element.hasAttribute("data-reveal")) {
-        element.dataset.reveal = "up";
-      }
-    }
+    const revealAnimations = new Map<HTMLElement, Animation>();
+    const appearedItems = new WeakSet<HTMLElement>();
 
     const revealObserver =
       !prefersReducedMotion && "IntersectionObserver" in window
         ? new IntersectionObserver(
-            (entries, observer) => {
+            (entries) => {
               for (const entry of entries) {
-                if (!entry.isIntersecting) continue;
-                entry.target.classList.add("is-visible");
-                observer.unobserve(entry.target);
+                const element = entry.target as HTMLElement;
+                const previousAnimation = revealAnimations.get(element);
+                const hasAppeared = appearedItems.has(element);
+
+                if (!entry.isIntersecting && !hasAppeared) continue;
+
+                previousAnimation?.cancel();
+                if (entry.isIntersecting) appearedItems.add(element);
+
+                const bounds = element.getBoundingClientRect();
+                const offset = entry.isIntersecting
+                  ? bounds.top >= window.innerHeight
+                    ? 18
+                    : -18
+                  : bounds.bottom <= 0
+                    ? -18
+                    : 18;
+                const hiddenTranslate = `0 ${offset}px`;
+                const animation = element.animate(
+                  entry.isIntersecting
+                    ? [
+                        { opacity: 0, translate: hiddenTranslate },
+                        { opacity: 1, translate: "0 0" },
+                      ]
+                    : [
+                        { opacity: 1, translate: "0 0" },
+                        { opacity: 0, translate: hiddenTranslate },
+                      ],
+                  {
+                    duration: 380,
+                    easing: "cubic-bezier(0.2, 0.7, 0.2, 1)",
+                    fill: "both",
+                  },
+                );
+                revealAnimations.set(element, animation);
+
+                if (entry.isIntersecting) {
+                  animation.onfinish = () => {
+                    if (revealAnimations.get(element) !== animation) return;
+                    animation.cancel();
+                    revealAnimations.delete(element);
+                  };
+                }
               }
             },
-            { threshold: 0.16, rootMargin: "0px 0px -36px 0px" },
+            { threshold: 0.12, rootMargin: "0px 0px -48px 0px" },
           )
         : null;
 
     for (const element of revealItems) {
       if (revealObserver) revealObserver.observe(element);
-      else element.classList.add("is-visible");
-    }
-
-    const animateCount = (element: HTMLElement) => {
-      const target = Number(element.dataset.count);
-      if (!Number.isFinite(target) || target <= 0) return;
-      if (prefersReducedMotion || !("IntersectionObserver" in window)) {
-        element.textContent = String(target);
-        return;
-      }
-
-      const duration = 900;
-      const start = performance.now();
-      const update = (now: number) => {
-        const progress = Math.min((now - start) / duration, 1);
-        const eased = 1 - (1 - progress) ** 3;
-        element.textContent = String(Math.round(target * eased));
-        if (progress < 1) requestAnimationFrame(update);
-      };
-      requestAnimationFrame(update);
-    };
-
-    const countObserver =
-      !prefersReducedMotion && "IntersectionObserver" in window
-        ? new IntersectionObserver(
-            (entries, observer) => {
-              for (const entry of entries) {
-                if (!entry.isIntersecting) continue;
-                animateCount(entry.target as HTMLElement);
-                observer.unobserve(entry.target);
-              }
-            },
-            { threshold: 0.7 },
-          )
-        : null;
-
-    for (const element of counters) {
-      if (countObserver) countObserver.observe(element);
-      else animateCount(element);
     }
 
     const progress = document.querySelector<HTMLElement>(".reading-progress");
@@ -102,10 +97,10 @@ export function ScrollExperience() {
     window.addEventListener("scroll", onScroll, { passive: true });
 
     return () => {
-      root.classList.remove("motion-ready");
       window.removeEventListener("scroll", onScroll);
       revealObserver?.disconnect();
-      countObserver?.disconnect();
+      for (const animation of revealAnimations.values()) animation.cancel();
+      revealAnimations.clear();
     };
   }, [pathname]);
 

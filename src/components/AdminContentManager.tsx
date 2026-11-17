@@ -53,10 +53,12 @@ export function AdminContentManager({
   tab,
   client,
   accessToken,
+  onAddMedia,
 }: {
   tab: ContentTab;
   client: SupabaseClient;
   accessToken: string;
+  onAddMedia?: (meeting: AdminMeeting) => void;
 }) {
   const [education, setEducation] = useState<Education[]>([]);
   const [achievements, setAchievements] = useState<Achievement[]>([]);
@@ -511,14 +513,25 @@ export function AdminContentManager({
                     {STATUS_LABEL[meeting.status]}
                   </span>
                 </div>
-                <button
-                  className="admin-action"
-                  type="button"
-                  disabled={busy}
-                  onClick={() => void changeMeetingStatus(meeting)}
-                >
-                  {meeting.status === "publica" ? "Pasar a borrador" : "Publicar"}
-                </button>
+                <div className="admin-media-actions">
+                  {onAddMedia && (
+                    <button
+                      className="admin-action"
+                      type="button"
+                      onClick={() => onAddMedia(meeting)}
+                    >
+                      Añadir fotos o videos
+                    </button>
+                  )}
+                  <button
+                    className="admin-action"
+                    type="button"
+                    disabled={busy}
+                    onClick={() => void changeMeetingStatus(meeting)}
+                  >
+                    {meeting.status === "publica" ? "Pasar a borrador" : "Publicar"}
+                  </button>
+                </div>
               </article>
             ))}
           </div>

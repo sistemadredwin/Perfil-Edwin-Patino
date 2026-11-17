@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import type { Metadata } from "next";
 import Link from "next/link";
+import { AnimatedCount } from "@/components/AnimatedCount";
 import { PersonJsonLd } from "@/components/PersonJsonLd";
 import { getProfile, getStats } from "@/lib/data";
 
@@ -57,12 +58,6 @@ export default async function HomePage() {
                   aria-label={`Retrato de ${profile.full_name} no disponible`}
                 />
               )}
-              {stats.years !== null && stats.years > 0 && (
-                <div className="home-portrait-badge">
-                  <strong>{stats.years}</strong>
-                  <span>años de<br />servicio</span>
-                </div>
-              )}
               <div className="home-portrait-caption">
                 <span>Buenaventura</span>
               </div>
@@ -78,10 +73,13 @@ export default async function HomePage() {
       <div className="container home-stats-container" data-reveal="up">
         <ul className="stats home-stats" aria-label="Trayectoria en cifras">
           {numbers
-            .filter((item) => item.value !== null && item.value > 0)
+            .filter(
+              (item): item is { value: number; label: string } =>
+                item.value !== null && item.value > 0,
+            )
             .map((item) => (
               <li key={item.label} className="stat home-stat">
-                <strong data-count={item.value}>{item.value}</strong>
+                <AnimatedCount value={item.value} />
                 <span>{item.label}</span>
               </li>
             ))}
